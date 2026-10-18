@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><title>生成六爻图标</title></head>
+<body style="font-family:sans-serif;text-align:center;padding:40px;background:#111;color:#eee">
+  <h2>六爻图标生成器</h2>
+  <canvas id="pv" width="512" height="512"
+          style="width:192px;height:192px;border-radius:24px;box-shadow:0 8px 24px #000"></canvas>
+  <p>
+    <button id="b192">下载 icon-192.png</button>
+    <button id="b512">下载 icon-512.png</button>
+  </p>
+<script>
+function draw(ctx, s) {
+  const k = s / 512;
+  ctx.fillStyle = '#0d0b09'; ctx.fillRect(0, 0, s, s);
+  ctx.strokeStyle = '#d4af37'; ctx.lineWidth = 8 * k;
+  ctx.beginPath(); ctx.arc(s/2, s/2, 204*k, 0, Math.PI*2); ctx.stroke();
+
+  ctx.fillStyle = '#d4af37';
+  const x = 136 * k, w = 240 * k, h = 16 * k, gap = 28 * k;
+  const pattern = [false, false, false, true, false, false]; // 上→下
+  const ys = [135, 181, 227, 273, 319, 365];
+
+  pattern.forEach((isYang, i) => {
+    const y = ys[i] * k;
+    if (isYang) {
+      ctx.fillRect(x, y, w, h);
+    } else {
+      const half = (w - gap) / 2;
+      ctx.fillRect(x, y, half, h);
+      ctx.fillRect(x + half + gap, y, half, h);
+    }
+  });
+}
+const pv = document.getElementById('pv');
+draw(pv.getContext('2d'), 512);
+
+function download(size, name) {
+  const c = document.createElement('canvas');
+  c.width = c.height = size;
+  draw(c.getContext('2d'), size);
+  c.toBlob((b) => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(b);
+    a.download = name;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  }, 'image/png');
+}
+document.getElementById('b192').onclick = () => download(192, 'icon-192.png');
+document.getElementById('b512').onclick = () => download(512, 'icon-512.png');
+</script>
+</body>
+</html>

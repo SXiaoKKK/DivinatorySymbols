@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0d0b09">
+<meta name="application-name" content="六爻">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="六爻">
+<meta name="description" content="自强不息，厚德载物。">
+<title>六爻</title>
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+:root{
+  --bg:#0d0b09;
+  --panel:#16120f;
+  --panel-2:#1e1813;
+  --line:#2e251c;
+  --gold:#d4af37;
+  --gold-soft:#c8a86a;
+  --ink:#e9e2d4;
+  --muted:#8a7f70;
+  --danger:#c0503f;
+}
+
+html,body{margin:0;padding:0}
+
+body{
+  font-family:"Songti SC","STSong","SimSun","Noto Serif CJK SC","Noto Serif SC",serif;
+  background-color:var(--bg);
+  background-image:
+    radial-gradient(1100px 560px at 50% -12%,rgba(212,175,55,.10),transparent 62%),
+    radial-gradient(760px 420px at 50% 112%,rgba(212,175,55,.05),transparent 62%);
+  background-attachment:fixed;
+  color:var(--ink);
+  min-height:100dvh;
+  padding-bottom:calc(122px + env(safe-area-inset-bottom));
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- 页头 ---------- */
+header{padding:30px 20px 6px;text-align:center}
+
+h1{
+  margin:0;
+  font-size:26px;
+  font-weight:400;
+  letter-spacing:.34em;
+  text-indent:.34em;
+  color:var(--gold);
+}
+
+.subtitle{
+  margin:10px 0 0;
+  font-size:11px;
+  letter-spacing:.3em;
+  text-indent:.3em;
+  color:var(--muted);
+}
+
+.rule{
+  width:64px;height:1px;margin:16px auto 0;
+  background:linear-gradient(90deg,transparent,rgba(212,175,55,.65),transparent);
+}
+
+/* ---------- 主体 ---------- */
+main{max-width:560px;margin:0 auto;padding:22px 16px 0}
+
+/* ---------- 空状态 ---------- */
+.empty-state{
+  text-align:center;
+  padding:52px 24px;
+  color:var(--muted);
+  font-size:14px;
+  letter-spacing:.16em;
+  line-height:2;
+}
+.empty-state .sym{
+  display:block;
+  font-size:46px;
+  color:rgba(212,175,55,.3);
+  margin-bottom:20px;
+  animation:breathe 4s ease-in-out infinite;
+}
+@keyframes breathe{0%,100%{opacity:.55}50%{opacity:1}}
+
+/* ---------- 结果卡片 ---------- */
+.result-wrap{animation:fadeUp .5s cubic-bezier(.2,.8,.3,1) both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+#result.fading{opacity:.25;transition:opacity .3s}
+
+.result-card{
+  background:linear-gradient(180deg,var(--panel-2),var(--panel));
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:18px 20px 16px;
+  margin-bottom:14px;
+  position:relative;
+  box-shadow:0 10px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.035);
+}
+.result-card.is-changed{border-color:#3a2e1e}
+
+.result-head{
+  display:flex;
+  align-items:baseline;
+  gap:9px;
+  margin-bottom:16px;
+}
+
+.badge{
+  flex:0 0 auto;
+  font-size:11px;
+  letter-spacing:.18em;
+  padding:3px 9px 3px 10px;
+  border:1px solid rgba(212,175,55,.4);
+  border-radius:999px;
+  color:var(--gold);
+  align-self:center;
+}
+
+.gua-num{font-size:11px;color:var(--muted);letter-spacing:.06em}
+.gua-name{font-size:18px;letter-spacing:.1em}
+.gua-sym{margin-left:auto;font-size:22px;color:var(--gold);line-height:1}
+
+/* ---------- 爻 ---------- */
+.yaos{display:flex;flex-direction:column;gap:10px}
+
+.yao-row{display:flex;align-items:center;gap:12px}
+
+.yao-num{
+  width:14px;flex:0 0 14px;
+  text-align:center;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.yao-shape{flex:1;display:flex;gap:14px;height:9px}
+.yao-shape i{
+  flex:1;
+  border-radius:1px;
+  background:var(--gold-soft);
+  opacity:.82;
+}
+.yao-shape.yang i{opacity:1}
+
+.yao-row.moving .yao-shape i{
+  background:var(--gold);
+  opacity:1;
+  box-shadow:0 0 12px rgba(212,175,55,.65);
+}
+
+.yao-tag{
+  width:14px;flex:0 0 14px;
+  text-align:center;
+  font-size:13px;
+  color:var(--gold);
+}
+
+/* ---------- 底部信息 ---------- */
+.result-foot{
+  margin-top:16px;
+  padding-top:13px;
+  border-top:1px dashed var(--line);
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+  letter-spacing:.1em;
+  color:var(--muted);
+}
+.result-foot b{color:var(--gold-soft);font-weight:400}
+
+.still-note{
+  text-align:center;
+  font-size:12px;
+  letter-spacing:.24em;
+  color:#5f574d;
+  padding:6px 0 10px;
+}
+
+/* =========================================================
+   历史记录面板（可展开收起）
+   ========================================================= */
+.history-panel{max-width:560px;margin:26px auto 0;padding:0 16px}
+
+/* 折叠按钮 */
+.history-toggle{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:15px 18px;
+  background:linear-gradient(180deg,var(--panel-2),var(--panel));
+  border:1px solid var(--line);
+  border-radius:14px;
+  color:var(--ink);
+  font-family:inherit;
+  font-size:14px;
+  letter-spacing:.24em;
+  text-indent:.24em;
+  cursor:pointer;
+  transition:border-color .25s,box-shadow .25s;
+}
+.history-toggle:active{border-color:rgba(212,175,55,.4)}
+
+.history-panel.open .history-toggle{
+  border-color:rgba(212,175,55,.32);
+  box-shadow:0 8px 26px rgba(0,0,0,.32);
+}
+
+.ht-title{color:var(--gold-soft)}
+
+.ht-count{
+  font-size:11px;
+  letter-spacing:.05em;
+  text-indent:0;
+  padding:2px 8px;
+  border-radius:999px;
+  border:1px solid rgba(212,175,55,.3);
+  color:var(--gold);
+  min-width:22px;
+  text-align:center;
+}
+
+.ht-arrow{
+  margin-left:auto;
+  font-size:11px;
+  color:var(--gold-soft);
+  transition:transform .38s cubic-bezier(.2,.8,.3,1);
+  line-height:1;
+}
+.history-panel.open .ht-arrow{transform:rotate(180deg)}
+
+/* 折叠区（grid 0fr → 1fr 平滑动画） */
+.history-body{
+  display:grid;
+  grid-template-rows:0fr;
+  transition:grid-template-rows .42s cubic-bezier(.2,.8,.3,1);
+}
+.history-panel.open .history-body{grid-template-rows:1fr}
+.history-body-clip{overflow:hidden;min-height:0}
+.history-body-inner{padding-top:14px}
+
+/* 工具行 */
+.history-tools{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-bottom:12px;
+  min-height:30px;
+}
+
+.history-tools button{
+  background:transparent;
+  border:1px solid var(--line);
+  color:var(--muted);
+  font-family:inherit;
+  font-size:12px;
+  letter-spacing:.08em;
+  padding:6px 13px;
+  border-radius:999px;
+  cursor:pointer;
+  transition:all .2s;
+}
+.history-tools button:active{transform:scale(.95)}
+.history-tools button:disabled{opacity:.32}
+.history-tools button.danger:not(:disabled){
+  color:#e88b78;
+  border-color:rgba(192,80,63,.55);
+  background:rgba(192,80,63,.08);
+}
+.history-tools button.active{
+  color:var(--gold);
+  border-color:rgba(212,175,55,.5);
+}
+
+/* 列表 */
+.history-list{
+  list-style:none;
+  margin:0;padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.history-entry{list-style:none}
+
+.history-item{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  padding:13px 15px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:13px;
+  cursor:pointer;
+  transition:border-color .22s,background .22s,transform .12s;
+}
+.history-item:active{transform:scale(.985)}
+
+.history-entry.open > .history-item{
+  border-color:rgba(212,175,55,.5);
+  background:linear-gradient(90deg,rgba(212,175,55,.09),rgba(212,175,55,.015));
+}
+
+.history-item.selected{
+  border-color:rgba(212,175,55,.65);
+  background:linear-gradient(90deg,rgba(212,175,55,.13),rgba(212,175,55,.02));
+}
+
+/* 选中圈：仅在管理模式显示 */
+.hi-check{
+  display:none;
+  flex:0 0 auto;
+  width:18px;height:18px;
+  border-radius:50%;
+  border:1px solid #3a3128;
+  position:relative;
+  transition:all .2s;
+}
+.history-panel.managing .hi-check{display:block}
+.history-item.selected .hi-check{
+  border-color:var(--gold);
+  background:var(--gold);
+}
+.history-item.selected .hi-check::after{
+  content:"";
+  position:absolute;
+  left:5px;top:2px;
+  width:5px;height:9px;
+  border:solid #0d0b09;
+  border-width:0 2px 2px 0;
+  transform:rotate(45deg);
+}
+
+.hi-main{flex:1;min-width:0}
+
+.hi-line1{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.hi-num{font-size:11px;color:var(--muted);letter-spacing:.05em}
+.hi-name{font-size:15px;letter-spacing:.1em}
+.hi-sym{font-size:16px;color:var(--gold)}
+
+.hi-line2{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:4px;
+  letter-spacing:.06em;
+}
+
+.hi-time{
+  font-size:11px;
+  color:#5f574d;
+  margin-top:5px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:.03em;
+}
+
+.hi-chevron{
+  flex:0 0 auto;
+  margin-left:auto;
+  font-size:10px;
+  color:#5f574d;
+  transition:transform .32s cubic-bezier(.2,.8,.3,1),color .25s;
+  line-height:1;
+}
+.history-entry.open .hi-chevron{transform:rotate(180deg);color:var(--gold)}
+
+/* 内联展开的卦象详情 */
+.item-detail{
+  display:grid;
+  grid-template-rows:0fr;
+  transition:grid-template-rows .38s cubic-bezier(.2,.8,.3,1);
+}
+.history-entry.open .item-detail{grid-template-rows:1fr}
+.item-detail-clip{overflow:hidden;min-height:0}
+.item-detail-inner{padding:10px 0 2px}
+
+/* 详情内复用结果卡片，缩小尺寸 */
+.item-detail-inner .result-card{
+  margin-bottom:10px;
+  padding:14px 16px 12px;
+  border-radius:13px;
+  box-shadow:0 6px 20px rgba(0,0,0,.28);
+}
+.item-detail-inner .result-card:last-child{margin-bottom:0}
+.item-detail-inner .gua-name{font-size:16px}
+.item-detail-inner .gua-sym{font-size:20px}
+.item-detail-inner .yaos{gap:8px}
+.item-detail-inner .yao-shape{height:8px;gap:12px}
+.item-detail-inner .result-foot{font-size:12px;margin-top:13px;padding-top:11px}
+.item-detail-inner .still-note{padding:2px 0 6px;font-size:11px}
+
+/* 空提示 */
+.empty-tip{
+  text-align:center;
+  font-size:13px;
+  letter-spacing:.2em;
+  color:#544c43;
+  padding:30px 0 34px;
+  margin:0;
+}
+
+/* ---------- 底部占卜按钮 ---------- */
+.dock{
+  position:fixed;
+  left:0;right:0;bottom:0;
+  padding:16px 16px calc(18px + env(safe-area-inset-bottom));
+  display:flex;
+  justify-content:center;
+  background:linear-gradient(to top,rgba(13,11,9,.99) 55%,rgba(13,11,9,0));
+  pointer-events:none;
+  z-index:20;
+}
+.dock > *{pointer-events:auto}
+
+.cast-btn{
+  width:92px;height:92px;
+  border-radius:50%;
+  border:1px solid rgba(212,175,55,.5);
+  background:radial-gradient(circle at 50% 32%,#2b2218,#12100b 72%);
+  color:var(--gold);
+  font-family:inherit;
+  font-size:19px;
+  letter-spacing:.16em;
+  text-indent:.16em;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 0 0 1px rgba(212,175,55,.08),0 10px 34px rgba(0,0,0,.65),
+             inset 0 0 22px rgba(212,175,55,.07);
+  transition:transform .14s ease,box-shadow .3s;
+}
+.cast-btn:active{transform:scale(.93)}
+.cast-btn.casting{
+  animation:castPulse .9s ease-in-out;
+  font-size:15px;
+  letter-spacing:.1em;
+}
+@keyframes castPulse{
+  0%{box-shadow:0 0 0 0 rgba(212,175,55,.5),0 10px 34px rgba(0,0,0,.65)}
+  70%{box-shadow:0 0 0 22px rgba(212,175,55,0),0 10px 34px rgba(0,0,0,.65)}
+  100%{box-shadow:0 0 0 0 rgba(212,175,55,0),0 10px 34px rgba(0,0,0,.65)}
+}
+
+/* =========================================================
+   PWA：安装按钮
+   ========================================================= */
+.install-pill{
+  position:fixed;
+  left:50%;
+  bottom:calc(148px + env(safe-area-inset-bottom));
+  z-index:25;
+
+  transform:translate(-50%,16px);
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .35s ease,
+             transform .35s cubic-bezier(.2,.8,.3,1),
+             visibility .35s;
+
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 22px;
+  border-radius:999px;
+  border:1px solid rgba(212,175,55,.45);
+  background:rgba(22,18,15,.92);
+  -webkit-backdrop-filter:blur(12px);
+  backdrop-filter:blur(12px);
+  color:var(--gold);
+  font-family:inherit;
+  font-size:13px;
+  letter-spacing:.2em;
+  text-indent:.2em;
+  cursor:pointer;
+  box-shadow:0 8px 28px rgba(0,0,0,.6),
+             inset 0 0 16px rgba(212,175,55,.06);
+}
+.install-pill.show{
+  opacity:1;
+  visibility:visible;
+  transform:translate(-50%,0);
+}
+.install-pill:active{transform:translate(-50%,0) scale(.95)}
+
+/* 已安装为独立应用时，不再提示 */
+@media (display-mode: standalone){
+  .install-pill{display:none !important}
+}
+
+/* 独立应用模式下收紧顶部留白 */
+@media (display-mode: standalone){
+  header{padding-top:calc(30px + env(safe-area-inset-top))}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>六爻</h1>
+  <p class="subtitle">无 妄 无 咎 · 元 亨 大 吉</p>
+  <div class="rule"></div>
+</header>
+
+<main>
+  <div id="result">
+    <div class="empty-state">
+      <span class="sym">☯</span>
+      天行健<br>君子以自强不息
+    </div>
+  </div>
+</main>
+
+<!-- ============ 历史记录：可展开收起的面板 ============ -->
+<section class="history-panel open" id="historyPanel">
+  <button class="history-toggle" id="historyToggle" type="button" aria-expanded="true">
+    <span class="ht-title">卦录</span>
+    <span class="ht-count" id="historyCount">0</span>
+    <span class="ht-arrow">▾</span>
+  </button>
+
+  <div class="history-body">
+    <div class="history-body-clip">
+      <div class="history-body-inner">
+
+        <div class="history-tools">
+          <button id="manageBtn" type="button">管理</button>
+          <button id="selectAllBtn" type="button" hidden>全选</button>
+          <button id="deleteBtn" type="button" class="danger" hidden>删除</button>
+          <button id="doneBtn" type="button" class="active" hidden>完成</button>
+        </div>
+
+        <ul id="historyList" class="history-list"></ul>
+        <p id="emptyTip" class="empty-tip">暂无卦录</p>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="dock">
+  <button id="castBtn" class="cast-btn" type="button">占卜</button>
+</div>
+
+<!-- PWA 安装入口 -->
+<button class="install-pill" id="installBtn" type="button">
+  <span id="installText">安装到桌面</span>
+</button>
+
+<script>
+(function () {
+  'use strict';
+
+  /* =========================================================
+     一、易经数据（与 Java 版一一对应）
+     ========================================================= */
+
+  var TRIGRAMS = [
+    { name: '乾', sym: '☰' },
+    { name: '兑', sym: '☱' },
+    { name: '离', sym: '☲' },
+    { name: '震', sym: '☳' },
+    { name: '巽', sym: '☴' },
+    { name: '坎', sym: '☵' },
+    { name: '艮', sym: '☶' },
+    { name: '坤', sym: '☷' }
+  ];
+
+  // 行 = 上卦(悔)，列 = 下卦(贞)
+  var GUA_MING = [
+    ['第一卦：乾为天䷀', '第十卦：天泽履䷉', '第十三卦：天火同人䷌', '第二十五卦：天雷无妄䷘', '第四十四卦：天风姤䷫', '第六卦：天水讼䷅', '第三十三卦：天山遯䷠', '第十二卦：天地否䷋'],
+    ['第四十三卦：泽天夬䷪', '第五十八卦：兑为泽䷹', '第四十九卦：泽火革䷰', '第十七卦：泽雷随䷐', '第二十八卦：泽风大过䷛', '第四十七卦：泽水困䷮', '第三十一卦：泽山咸䷞', '第四十五卦：泽地萃䷬'],
+    ['第十四卦：火天大有䷍', '第三十八卦：火泽睽䷥', '第三十卦：离为火䷝', '第二十一卦：火雷噬嗑䷔', '第五十卦：火风鼎䷱', '第六十四卦：火水未济䷿', '第五十六卦：火山旅䷷', '第三十五卦：火地晋䷢'],
+    ['第三十四卦：雷天大壮䷡', '第五十四卦：雷泽归妹䷵', '第五十五卦：雷火丰䷶', '第五十一卦：震为雷䷲', '第三十二卦：雷风恒䷟', '第四十卦：雷水解䷧', '第六十二卦：雷山小过䷽', '第十六卦：雷地豫䷏'],
+    ['第九卦：风天小畜䷈', '第六十一卦：风泽中孚䷼', '第三十七卦：风火家人䷤', '第四十二卦：风雷益䷩', '第五十七卦：巽为风䷸', '第五十九卦：风水涣䷺', '第五十三卦：风山渐䷴', '第二十卦：风地观䷓'],
+    ['第五卦：水天需䷄', '第六十卦：水泽节䷻', '第六十三卦：水火既济䷾', '第三卦：水雷屯䷂', '第四十八卦：水风井䷯', '第二十九卦：坎为水䷜', '第三十九卦：水山蹇䷦', '第八卦：水地比䷇'],
+    ['第二十六卦：山天大畜䷙', '第四十一卦：山泽损䷨', '第二十二卦：山火贲䷕', '第二十七卦：山雷颐䷚', '第十八卦：山风蛊䷑', '第四卦：山水蒙䷃', '第五十二卦：艮为山䷳', '第二十三卦：山地剥䷖'],
+    ['第十一卦：地天泰䷊', '第十九卦：地泽临䷒', '第三十六卦：地火明夷䷣', '第二十四卦：地雷复䷗', '第四十六卦：地风升䷭', '第七卦：地水师䷆', '第十五卦：地山谦䷎', '第二卦：坤为地䷁']
+  ];
+
+  /* =========================================================
+     二、占卜核心逻辑（移植自 Java）
+     ========================================================= */
+
+  // 三枚铜钱掷一爻：6 老阴 / 7 少阳 / 8 少阴 / 9 老阳
+  function castOne() {
+    var g = 6;
+    for (var j = 0; j < 3; j++) {
+      g += Math.floor(Math.random() * 2);
+    }
+    return g;
+  }
+
+  // 三爻一卦（0 下爻 → 2 上爻）
+  function castTrigram() {
+    return [castOne(), castOne(), castOne()];
+  }
+
+  // 三爻 → 卦序 1~8（与 Java guaXv 一致）
+  function trigramIndex(t) {
+    var j = 0;
+    j += (t[2] % 2 === 1) ? 9 : 10;
+    j -= (t[1] % 2 === 1) ? 5 : 3;
+    j += (t[0] % 2 === 1) ? -3 : 1;
+    return j;
+  }
+
+  // 变卦：9 → 8，6 → 7
+  function changeTrigram(t) {
+    return t.map(function (v) {
+      if (v === 9) return 8;
+      if (v === 6) return 7;
+      return v;
+    });
+  }
+
+  function guaNameOf(upperIdx, lowerIdx) {
+    return GUA_MING[upperIdx - 1][lowerIdx - 1];
+  }
+
+  // "第十卦：天泽履䷉" → { num, name, sym }
+  function parseGua(str) {
+    var i = str.indexOf('：');
+    var num = str.slice(0, i);
+    var rest = str.slice(i + 1);
+    var chars = Array.from(rest);
+    var last = chars[chars.length - 1] || '';
+    var cp = last.codePointAt(0) || 0;
+    var isSym = cp >= 0x4DC0 && cp <= 0x4DFF;
+    return {
+      num: num,
+      name: isSym ? chars.slice(0, -1).join('') : rest,
+      sym: isSym ? last : ''
+    };
+  }
+
+  function divine() {
+    var upper = castTrigram();
+    var lower = castTrigram();
+    return {
+      id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
+      time: Date.now(),
+      upper: upper,
+      lower: lower,
+      upperB: changeTrigram(upper),
+      lowerB: changeTrigram(lower)
+    };
+  }
+
+  function summarize(rec) {
+    var ui = trigramIndex(rec.upper);
+    var li = trigramIndex(rec.lower);
+    var uiB = trigramIndex(rec.upperB);
+    var liB = trigramIndex(rec.lowerB);
+    return {
+      ui: ui, li: li, uiB: uiB, liB: liB,
+      g: parseGua(guaNameOf(ui, li)),
+      gB: parseGua(guaNameOf(uiB, liB)),
+      changed: ui !== uiB || li !== liB
+    };
+  }
+
+  /* =========================================================
+     三、DOM
+     ========================================================= */
+
+  var resultEl     = document.getElementById('result');
+  var panel        = document.getElementById('historyPanel');
+  var toggleBtn    = document.getElementById('historyToggle');
+  var countEl      = document.getElementById('historyCount');
+  var historyList  = document.getElementById('historyList');
+  var emptyTip     = document.getElementById('emptyTip');
+  var manageBtn    = document.getElementById('manageBtn');
+  var selectAllBtn = document.getElementById('selectAllBtn');
+  var deleteBtn    = document.getElementById('deleteBtn');
+  var doneBtn      = document.getElementById('doneBtn');
+  var castBtn      = document.getElementById('castBtn');
+
+  var STORAGE_KEY = 'yijing.history.v1';
+
+  var history    = [];      // 全部记录（新 → 旧）
+  var selected   = new Set(); // 管理模式下的选中项
+  var managing   = false;   // 是否处于管理模式
+  var expandedId = null;    // 当前展开查看卦象的记录 id
+  var busy       = false;
+
+  /* =========================================================
+     四、存储
+     ========================================================= */
+
+  function loadHistory() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      history = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(history)) history = [];
+    } catch (e) {
+      history = [];
+    }
+  }
+
+  function saveHistory() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+    } catch (e) { /* 忽略配额错误 */ }
+  }
+
+  /* =========================================================
+     五、渲染
+     ========================================================= */
+
+  // 单爻
+  function yaoHTML(v) {
+    var isYang = v % 2 === 1;
+    var moving = (v === 6 || v === 9);
+    var mark = v === 9 ? '○' : (v === 6 ? '×' : '');
+    var shape = isYang
+      ? '<div class="yao-shape yang"><i></i></div>'
+      : '<div class="yao-shape yin"><i></i><i></i></div>';
+    return '<div class="yao-row' + (moving ? ' moving' : '') + '">' +
+             '<span class="yao-num">' + v + '</span>' +
+             shape +
+             '<span class="yao-tag">' + mark + '</span>' +
+           '</div>';
+  }
+
+  // 结果卡片（顶部结果区 & 历史详情共用）
+  function cardHTML(badge, gua, lines, upperIdx, lowerIdx, isChanged) {
+    var rows = lines.slice().reverse().map(yaoHTML).join('');
+    var up = TRIGRAMS[upperIdx - 1];
+    var lo = TRIGRAMS[lowerIdx - 1];
+    return '' +
+      '<div class="result-card' + (isChanged ? ' is-changed' : '') + '">' +
+        '<div class="result-head">' +
+          '<span class="badge">' + badge + '</span>' +
+          '<span class="gua-num">' + gua.num + '</span>' +
+          '<span class="gua-name">' + gua.name + '</span>' +
+          '<span class="gua-sym">' + gua.sym + '</span>' +
+        '</div>' +
+        '<div class="yaos">' + rows + '</div>' +
+        '<div class="result-foot">' +
+          '<span>悔 · <b>' + up.name + up.sym + '</b></span>' +
+          '<span>贞 · <b>' + lo.name + lo.sym + '</b></span>' +
+        '</div>' +
+      '</div>';
+  }
+
+  // 一条记录的完整卦象（本卦 + 变卦）
+  function recordCardsHTML(rec, s) {
+    var lines  = rec.lower.concat(rec.upper);
+    var linesB = rec.lowerB.concat(rec.upperB);
+
+    var html = cardHTML('本卦', s.g, lines, s.ui, s.li, false);
+
+    if (s.changed) {
+      html += cardHTML('变卦', s.gB, linesB, s.uiB, s.liB, true);
+    } else {
+      html += '<div class="still-note">六 爻 安 静 · 无 变 卦</div>';
+    }
+    return html;
+  }
+
+  /* ---------- 顶部结果区 ---------- */
+  function renderResult(rec) {
+    if (!rec) {
+      resultEl.innerHTML =
+        '<div class="empty-state">' +
+          '<span class="sym">☯</span>' +
+          '天 行 健<br>君 子 以 自 强 不 息' +
+        '</div>';
+      return;
+    }
+    var s = summarize(rec);
+    resultEl.classList.remove('fading');
+    resultEl.innerHTML = '<div class="result-wrap">' + recordCardsHTML(rec, s) + '</div>';
+  }
+
+  /* ---------- 时间 ---------- */
+  function fmtTime(ts) {
+    var d = new Date(ts);
+    var p = function (n) { return String(n).padStart(2, '0'); };
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) +
+           ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
+  }
+
+  /* ---------- 历史列表 ---------- */
+  function renderHistory() {
+    countEl.textContent = history.length;
+
+    if (!history.length) {
+      historyList.innerHTML = '';
+      emptyTip.hidden = false;
+      updateTools();
+      return;
+    }
+    emptyTip.hidden = true;
+
+    historyList.innerHTML = history.map(function (rec) {
+      var s = summarize(rec);
+      var sel = selected.has(rec.id);
+      var open = expandedId === rec.id;
+
+      var changedLine = s.changed
+        ? '<div class="hi-line2">变 · ' + s.gB.name + ' ' + s.gB.sym + '</div>'
+        : '';
+
+      // 只有展开时才生成详情 DOM，节省渲染开销
+      var detail = open
+        ? '<div class="item-detail">' +
+            '<div class="item-detail-clip">' +
+              '<div class="item-detail-inner">' + recordCardsHTML(rec, s) + '</div>' +
+            '</div>' +
+          '</div>'
+        : '';
+
+      return '' +
+        '<li class="history-entry' + (open ? ' open' : '') + '" data-id="' + rec.id + '">' +
+          '<div class="history-item' + (sel ? ' selected' : '') + '">' +
+            '<span class="hi-check"></span>' +
+            '<div class="hi-main">' +
+              '<div class="hi-line1">' +
+                '<span class="hi-num">' + s.g.num + '</span>' +
+                '<span class="hi-name">' + s.g.name + '</span>' +
+                '<span class="hi-sym">' + s.g.sym + '</span>' +
+              '</div>' +
+              changedLine +
+              '<div class="hi-time">' + fmtTime(rec.time) + '</div>' +
+            '</div>' +
+            '<span class="hi-chevron">▾</span>' +
+          '</div>' +
+          detail +
+        '</li>';
+    }).join('');
+
+    updateTools();
+  }
+
+  /* ---------- 工具按钮 ---------- */
+  function updateTools() {
+    // 清理已被删除的选中项
+    var ids = new Set(history.map(function (r) { return r.id; }));
+    selected.forEach(function (id) {
+      if (!ids.has(id)) selected.delete(id);
+    });
+
+    if (managing) {
+      manageBtn.hidden = true;
+      selectAllBtn.hidden = false;
+      deleteBtn.hidden = false;
+      doneBtn.hidden = false;
+
+      deleteBtn.disabled = selected.size === 0;
+      deleteBtn.textContent = selected.size ? '删除 (' + selected.size + ')' : '删除';
+
+      selectAllBtn.disabled = history.length === 0;
+      selectAllBtn.textContent =
+        (history.length > 0 && selected.size === history.length) ? '取消全选' : '全选';
+    } else {
+      manageBtn.hidden = false;
+      selectAllBtn.hidden = true;
+      deleteBtn.hidden = true;
+      doneBtn.hidden = true;
+      manageBtn.disabled = history.length === 0;
+      manageBtn.textContent = '管理';
+    }
+  }
+
+  /* ---------- 管理模式切换 ---------- */
+  function setManaging(on) {
+    managing = on;
+    if (!on) selected.clear();
+    if (on) expandedId = null;
+    panel.classList.toggle('managing', on);
+    renderHistory();
+  }
+
+  /* =========================================================
+     六、交互
+     ========================================================= */
+
+  // 占卜
+  castBtn.addEventListener('click', function () {
+    if (busy) return;
+    busy = true;
+
+    castBtn.classList.add('casting');
+    castBtn.textContent = '摇卦';
+    resultEl.classList.add('fading');
+
+    if (navigator.vibrate) { try { navigator.vibrate(28); } catch (e) {} }
+
+    setTimeout(function () {
+      var rec = divine();
+      history.unshift(rec);
+      saveHistory();
+
+      renderResult(rec);
+      renderHistory();
+
+      castBtn.classList.remove('casting');
+      castBtn.textContent = '占卜';
+      busy = false;
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 880);
+  });
+
+  // 展开 / 收起历史面板
+  toggleBtn.addEventListener('click', function () {
+    var open = panel.classList.toggle('open');
+    toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+
+  // 点击记录：管理模式 = 选中；普通模式 = 展开卦象
+  historyList.addEventListener('click', function (e) {
+    var item = e.target.closest('.history-item');
+    if (!item) return;
+
+    var entry = item.closest('.history-entry');
+    var id = entry.dataset.id;
+
+    if (managing) {
+      if (selected.has(id)) selected.delete(id);
+      else selected.add(id);
+      renderHistory();
+      return;
+    }
+
+    // 普通模式：展开 / 收起该条记录
+    expandedId = (expandedId === id) ? null : id;
+    renderHistory();
+
+    if (expandedId) {
+      requestAnimationFrame(function () {
+        var target = historyList.querySelector('.history-entry.open');
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+    }
+  });
+
+  // 管理 / 完成
+  manageBtn.addEventListener('click', function () {
+    if (!history.length) return;
+    setManaging(true);
+  });
+
+  doneBtn.addEventListener('click', function () {
+    setManaging(false);
+  });
+
+  // 全选 / 取消全选
+  selectAllBtn.addEventListener('click', function () {
+    if (!history.length) return;
+    if (selected.size === history.length) selected.clear();
+    else history.forEach(function (r) { selected.add(r.id); });
+    renderHistory();
+  });
+
+  // 删除选中
+  deleteBtn.addEventListener('click', function () {
+    if (!selected.size) return;
+    if (!confirm('确定删除选中的 ' + selected.size + ' 条占卜记录？')) return;
+
+    history = history.filter(function (r) { return !selected.has(r.id); });
+    if (expandedId && !history.some(function (r) { return r.id === expandedId; })) {
+      expandedId = null;
+    }
+    selected.clear();
+    saveHistory();
+    renderHistory();
+  });
+
+  /* =========================================================
+     七、初始化
+     ========================================================= */
+
+  loadHistory();
+  renderHistory();
+  renderResult(null);
+  toggleBtn.setAttribute('aria-expanded', panel.classList.contains('open') ? 'true' : 'false');
+
+  /* =========================================================
+     八、PWA：安装提示 + Service Worker
+     ========================================================= */
+
+  (function initPWA() {
+    var installBtn  = document.getElementById('installBtn');
+    var installText = document.getElementById('installText');
+
+    var standalone =
+      (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+      navigator.standalone === true;
+
+    var deferredPrompt = null;
+
+    function showInstall() {
+      if (!installBtn || standalone) return;
+      installBtn.classList.add('show');
+    }
+    function hideInstall() {
+      if (installBtn) installBtn.classList.remove('show');
+    }
+
+    // Android / 桌面 Chrome / Edge：捕获安装事件
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      deferredPrompt = e;
+      showInstall();
+    });
+
+    window.addEventListener('appinstalled', function () {
+      deferredPrompt = null;
+      hideInstall();
+    });
+
+    // iOS Safari 无 beforeinstallprompt，改为手动引导
+    var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    var iosTipDone = false;
+    try { iosTipDone = localStorage.getItem('liuyao.iosTip') === '1'; } catch (err) {}
+
+    if (isIOS && !standalone && !iosTipDone) {
+      if (installText) installText.textContent = '添加到主屏幕';
+      showInstall();
+    }
+
+    if (installBtn) {
+      installBtn.addEventListener('click', function () {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then(function (res) {
+            if (res && res.outcome === 'accepted') hideInstall();
+            deferredPrompt = null;
+          }).catch(function () {});
+          return;
+        }
+        // iOS 引导
+        alert('在 Safari 中点击底部「分享」按钮，\n选择「添加到主屏幕」即可安装。');
+        try { localStorage.setItem('liuyao.iosTip', '1'); } catch (err) {}
+        hideInstall();
+      });
+    }
+
+    // ---- 注册 Service Worker ----
+    if (!('serviceWorker' in navigator)) return;
+
+    var hadController = !!navigator.serviceWorker.controller;
+    var refreshing = false;
+
+    window.addEventListener('load', function () {
+      navigator.serviceWorker
+        .register('./service-worker.js', { scope: './' })
+        .then(function (reg) {
+          // 已有新版本等待中
+          if (reg.waiting && navigator.serviceWorker.controller) {
+            askUpdate(reg.waiting);
+          }
+
+          reg.addEventListener('updatefound', function () {
+            var sw = reg.installing;
+            if (!sw) return;
+            sw.addEventListener('statechange', function () {
+              if (sw.state === 'installed' && navigator.serviceWorker.controller) {
+                askUpdate(sw);
+              }
+            });
+          });
+        })
+        .catch(function () {
+          /* file:// 或非安全上下文（非 HTTPS）下静默忽略 */
+        });
+    });
+
+    function askUpdate(worker) {
+      if (confirm('发现新版本，是否立即更新？')) {
+        worker.postMessage({ type: 'SKIP_WAITING' });
+      }
+    }
+
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (!hadController) { hadController = true; return; } // 首次接管不刷新
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+  })();
+})();
+</script>
+</body>
+</html>
