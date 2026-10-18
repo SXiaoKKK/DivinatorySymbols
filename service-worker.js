@@ -1,7 +1,7 @@
 const CACHE = 'liuyao-v1';
 const ASSETS = [
   './',
-  './DivinatorySymbols.html',
+  './index.html',
   './manifest.json',
   './icon.svg',
   './icon-192.png',
