@@ -1,10 +1,10 @@
 {
-  "name": "六爻 · 占卜",
-  "short_name": "六爻",
+  "name": "易经 · 占卜",
+  "short_name": "经占",
   "description": "自强不息，厚德载物。",
   "lang": "zh-CN",
   "dir": "ltr",
-  "start_url": "./index.html",
+  "start_url": "./DivinatorySymbols.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
