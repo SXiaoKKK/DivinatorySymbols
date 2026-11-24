@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0d0b09">
-<meta name="application-name" content="经占">
+<meta name="application-name" content="卜筮">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="经占">
+<meta name="apple-mobile-web-app-title" content="卜筮">
 <meta name="description" content="自强不息，厚德载物。">
-<title>经占</title>
+<title>卜筮</title>
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="./icon-192.png">
@@ -66,6 +66,78 @@ h1{
 .rule{
   width:64px;height:1px;margin:16px auto 0;
   background:linear-gradient(90deg,transparent,rgba(212,175,55,.65),transparent);
+}
+
+/* ---------- 模式切换胶囊 ---------- */
+.mode-bar{display:flex;justify-content:center;margin-top:14px}
+
+.mode-chip{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 16px;
+  border:1px solid rgba(212,175,55,.35);
+  border-radius:999px;
+  background:rgba(30,24,19,.6);
+  color:var(--gold-soft);
+  font-family:inherit;font-size:12px;letter-spacing:.16em;
+  cursor:pointer;
+  transition:border-color .25s,transform .14s;
+}
+.mode-chip:active{transform:scale(.96);border-color:rgba(212,175,55,.6)}
+.mode-chip .mc-label{color:var(--muted);letter-spacing:.1em}
+.mode-chip .mc-value{color:var(--gold)}
+.mode-chip .mc-caret{font-size:10px;color:var(--gold-soft)}
+
+/* ---------- 模式选择全屏界面 ---------- */
+.mode-gate{
+  position:fixed;inset:0;z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;
+  background:rgba(7,6,4,.84);
+  -webkit-backdrop-filter:blur(14px);
+  backdrop-filter:blur(14px);
+  opacity:0;visibility:hidden;
+  transition:opacity .3s,visibility .3s;
+}
+.mode-gate.show{opacity:1;visibility:visible}
+
+.gate-inner{
+  width:100%;max-width:360px;
+  text-align:center;
+}
+.mode-gate.show .gate-inner{animation:gateIn .4s cubic-bezier(.2,.8,.3,1) both}
+@keyframes gateIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
+
+.gate-title{font-size:20px;letter-spacing:.3em;text-indent:.3em;color:var(--gold);margin-bottom:8px}
+.gate-sub{font-size:12px;letter-spacing:.2em;color:var(--muted);margin-bottom:26px}
+
+.gate-option{
+  display:block;width:100%;
+  text-align:left;
+  position:relative;
+  padding:18px 22px;
+  margin-bottom:14px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:linear-gradient(180deg,var(--panel-2),var(--panel));
+  color:var(--ink);
+  font-family:inherit;
+  cursor:pointer;
+  transition:border-color .25s,transform .14s,background .25s;
+}
+.gate-option:active{transform:scale(.98)}
+.gate-option.current{
+  border-color:rgba(212,175,55,.6);
+  background:linear-gradient(90deg,rgba(212,175,55,.1),rgba(212,175,55,.02));
+}
+.go-title{display:block;font-size:18px;letter-spacing:.2em;color:var(--gold);margin-bottom:6px}
+.go-desc{display:block;font-size:12px;letter-spacing:.1em;color:var(--muted);line-height:1.7}
+.go-mark{
+  position:absolute;right:20px;top:50%;transform:translateY(-50%);
+  font-size:26px;color:rgba(212,175,55,.45);line-height:1;
+}
+
+.gate-hint{
+  margin-top:8px;font-size:11px;letter-spacing:.16em;color:#5f574d;
 }
 
 /* ---------- 主体 ---------- */
@@ -185,11 +257,10 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
 }
 
 /* =========================================================
-   历史记录面板（可展开收起）
+   历史记录面板
    ========================================================= */
 .history-panel{max-width:560px;margin:26px auto 0;padding:0 16px}
 
-/* 折叠按钮 */
 .history-toggle{
   width:100%;
   display:flex;
@@ -237,7 +308,6 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
 }
 .history-panel.open .ht-arrow{transform:rotate(180deg)}
 
-/* 折叠区（grid 0fr → 1fr 平滑动画） */
 .history-body{
   display:grid;
   grid-template-rows:0fr;
@@ -247,14 +317,20 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
 .history-body-clip{overflow:hidden;min-height:0}
 .history-body-inner{padding-top:14px}
 
-/* 工具行 */
+/* 工具行：左筛选 + 右管理 */
 .history-tools{
   display:flex;
-  justify-content:flex-end;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
   gap:8px;
   margin-bottom:12px;
   min-height:30px;
 }
+
+.tool-group{display:flex;gap:8px}
+
+.filter-group{display:flex;gap:6px}
 
 .history-tools button{
   background:transparent;
@@ -278,6 +354,13 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
 .history-tools button.active{
   color:var(--gold);
   border-color:rgba(212,175,55,.5);
+}
+
+.filter-group button{letter-spacing:.04em;padding:6px 11px}
+.filter-group button.active{
+  color:var(--gold);
+  border-color:rgba(212,175,55,.5);
+  background:rgba(212,175,55,.08);
 }
 
 /* 列表 */
@@ -314,7 +397,6 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
   background:linear-gradient(90deg,rgba(212,175,55,.13),rgba(212,175,55,.02));
 }
 
-/* 选中圈：仅在管理模式显示 */
 .hi-check{
   display:none;
   flex:0 0 auto;
@@ -346,6 +428,21 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
 .hi-name{font-size:15px;letter-spacing:.1em}
 .hi-sym{font-size:16px;color:var(--gold)}
 
+.hi-type{
+  font-size:10px;
+  letter-spacing:.08em;
+  padding:1px 6px;
+  border-radius:999px;
+  border:1px solid rgba(212,175,55,.28);
+  color:var(--gold-soft);
+  white-space:nowrap;
+  align-self:center;
+}
+.hi-type.coin{
+  border-color:rgba(200,168,106,.4);
+  color:#c8a86a;
+}
+
 .hi-line2{
   font-size:12px;
   color:var(--muted);
@@ -371,7 +468,6 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
 }
 .history-entry.open .hi-chevron{transform:rotate(180deg);color:var(--gold)}
 
-/* 内联展开的卦象详情 */
 .item-detail{
   display:grid;
   grid-template-rows:0fr;
@@ -381,7 +477,6 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
 .item-detail-clip{overflow:hidden;min-height:0}
 .item-detail-inner{padding:10px 0 2px}
 
-/* 详情内复用结果卡片，缩小尺寸 */
 .item-detail-inner .result-card{
   margin-bottom:10px;
   padding:14px 16px 12px;
@@ -396,7 +491,6 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
 .item-detail-inner .result-foot{font-size:12px;margin-top:13px;padding-top:11px}
 .item-detail-inner .still-note{padding:2px 0 6px;font-size:11px}
 
-/* 空提示 */
 .empty-tip{
   text-align:center;
   font-size:13px;
@@ -449,22 +543,18 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
   100%{box-shadow:0 0 0 0 rgba(212,175,55,0),0 10px 34px rgba(0,0,0,.65)}
 }
 
-/* =========================================================
-   PWA：安装按钮
-   ========================================================= */
+/* ---------- PWA 安装按钮 ---------- */
 .install-pill{
   position:fixed;
   left:50%;
   bottom:calc(148px + env(safe-area-inset-bottom));
   z-index:25;
-
   transform:translate(-50%,16px);
   opacity:0;
   visibility:hidden;
   transition:opacity .35s ease,
              transform .35s cubic-bezier(.2,.8,.3,1),
              visibility .35s;
-
   display:flex;
   align-items:center;
   gap:8px;
@@ -490,13 +580,8 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
 }
 .install-pill:active{transform:translate(-50%,0) scale(.95)}
 
-/* 已安装为独立应用时，不再提示 */
 @media (display-mode: standalone){
   .install-pill{display:none !important}
-}
-
-/* 独立应用模式下收紧顶部留白 */
-@media (display-mode: standalone){
   header{padding-top:calc(30px + env(safe-area-inset-top))}
 }
 </style>
@@ -504,9 +589,16 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
 <body>
 
 <header>
-  <h1>经占</h1>
+  <h1>卜筮</h1>
   <p class="subtitle">无 妄 无 咎 · 元 亨 大 吉</p>
   <div class="rule"></div>
+  <div class="mode-bar">
+    <button class="mode-chip" id="modeChip" type="button">
+      <span class="mc-label">当前</span>
+      <span class="mc-value" id="modeValue">六爻</span>
+      <span class="mc-caret">▾</span>
+    </button>
+  </div>
 </header>
 
 <main>
@@ -518,7 +610,7 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
   </div>
 </main>
 
-<!-- ============ 历史记录：可展开收起的面板 ============ -->
+<!-- ============ 历史记录 ============ -->
 <section class="history-panel open" id="historyPanel">
   <button class="history-toggle" id="historyToggle" type="button" aria-expanded="true">
     <span class="ht-title">卦录</span>
@@ -531,10 +623,17 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
       <div class="history-body-inner">
 
         <div class="history-tools">
-          <button id="manageBtn" type="button">管理</button>
-          <button id="selectAllBtn" type="button" hidden>全选</button>
-          <button id="deleteBtn" type="button" class="danger" hidden>删除</button>
-          <button id="doneBtn" type="button" class="active" hidden>完成</button>
+          <div class="filter-group" id="filterGroup">
+            <button type="button" data-filter="all" class="active">全部</button>
+            <button type="button" data-filter="liuyao">六爻</button>
+            <button type="button" data-filter="coin">金钱卦</button>
+          </div>
+          <div class="tool-group">
+            <button id="manageBtn" type="button">管理</button>
+            <button id="selectAllBtn" type="button" hidden>全选</button>
+            <button id="deleteBtn" type="button" class="danger" hidden>删除</button>
+            <button id="doneBtn" type="button" class="active" hidden>完成</button>
+          </div>
         </div>
 
         <ul id="historyList" class="history-list"></ul>
@@ -549,17 +648,38 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
   <button id="castBtn" class="cast-btn" type="button">占卜</button>
 </div>
 
-<!-- PWA 安装入口 -->
 <button class="install-pill" id="installBtn" type="button">
   <span id="installText">安装到桌面</span>
 </button>
+
+<!-- ============ 模式选择界面 ============ -->
+<div class="mode-gate" id="modeGate" aria-hidden="true">
+  <div class="gate-inner">
+    <div class="gate-title">选择占卜方式</div>
+    <div class="gate-sub">请 择 一 法 起 卦</div>
+
+    <button class="gate-option" type="button" data-mode="liuyao">
+      <span class="go-title">六爻</span>
+      <span class="go-desc">铜钱六掷 · 三枚一爻<br>有动爻变卦，观本卦与变卦</span>
+      <span class="go-mark">䷀</span>
+    </button>
+
+    <button class="gate-option" type="button" data-mode="coin">
+      <span class="go-title">金钱卦</span>
+      <span class="go-desc">三掷成卦 · 每爻一分阴阳<br>无动爻，只观本卦</span>
+      <span class="go-mark">☯</span>
+    </button>
+
+    <div class="gate-hint">选择后可随时点击顶部胶囊切换</div>
+  </div>
+</div>
 
 <script>
 (function () {
   'use strict';
 
   /* =========================================================
-     一、易经数据（与 Java 版一一对应）
+     一、易经数据
      ========================================================= */
 
   var TRIGRAMS = [
@@ -573,7 +693,6 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
     { name: '坤', sym: '☷' }
   ];
 
-  // 行 = 上卦(悔)，列 = 下卦(贞)
   var GUA_MING = [
     ['第一卦：乾为天䷀', '第十卦：天泽履䷉', '第十三卦：天火同人䷌', '第二十五卦：天雷无妄䷘', '第四十四卦：天风姤䷫', '第六卦：天水讼䷅', '第三十三卦：天山遯䷠', '第十二卦：天地否䷋'],
     ['第四十三卦：泽天夬䷪', '第五十八卦：兑为泽䷹', '第四十九卦：泽火革䷰', '第十七卦：泽雷随䷐', '第二十八卦：泽风大过䷛', '第四十七卦：泽水困䷮', '第三十一卦：泽山咸䷞', '第四十五卦：泽地萃䷬'],
@@ -586,10 +705,10 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
   ];
 
   /* =========================================================
-     二、占卜核心逻辑（移植自 Java）
+     二、占卜核心逻辑
      ========================================================= */
 
-  // 三枚铜钱掷一爻：6 老阴 / 7 少阳 / 8 少阴 / 9 老阳
+  /* ---- 六爻 ---- */
   function castOne() {
     var g = 6;
     for (var j = 0; j < 3; j++) {
@@ -598,21 +717,10 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
     return g;
   }
 
-  // 三爻一卦（0 下爻 → 2 上爻）
   function castTrigram() {
     return [castOne(), castOne(), castOne()];
   }
 
-  // 三爻 → 卦序 1~8（与 Java guaXv 一致）
-  function trigramIndex(t) {
-    var j = 0;
-    j += (t[2] % 2 === 1) ? 9 : 10;
-    j -= (t[1] % 2 === 1) ? 5 : 3;
-    j += (t[0] % 2 === 1) ? -3 : 1;
-    return j;
-  }
-
-  // 变卦：9 → 8，6 → 7
   function changeTrigram(t) {
     return t.map(function (v) {
       if (v === 9) return 8;
@@ -621,11 +729,54 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
     });
   }
 
+  function divine() {
+    var upper = castTrigram();
+    var lower = castTrigram();
+    return {
+      id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
+      time: Date.now(),
+      type: 'liuyao',
+      upper: upper,
+      lower: lower,
+      upperB: changeTrigram(upper),
+      lowerB: changeTrigram(lower)
+    };
+  }
+
+  /* ---- 金钱卦（对应 DivinatorySymbol.java） ---- */
+  // 每爻 0 或 1；返回 [下, 中, 上]
+  function coinTrigram() {
+    return [
+      Math.floor(Math.random() * 2),
+      Math.floor(Math.random() * 2),
+      Math.floor(Math.random() * 2)
+    ];
+  }
+
+  function divineCoin() {
+    return {
+      id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
+      time: Date.now(),
+      type: 'coin',
+      upper: coinTrigram(),
+      lower: coinTrigram()
+    };
+  }
+
+  /* ---- 通用 ---- */
+  // 三爻 → 卦序 1~8；对 6/7/8/9 与 0/1 均适用（%2 判奇偶）
+  function trigramIndex(t) {
+    var j = 0;
+    j += (t[2] % 2 === 1) ? 9 : 10;
+    j -= (t[1] % 2 === 1) ? 5 : 3;
+    j += (t[0] % 2 === 1) ? -3 : 1;
+    return j;
+  }
+
   function guaNameOf(upperIdx, lowerIdx) {
     return GUA_MING[upperIdx - 1][lowerIdx - 1];
   }
 
-  // "第十卦：天泽履䷉" → { num, name, sym }
   function parseGua(str) {
     var i = str.indexOf('：');
     var num = str.slice(0, i);
@@ -641,29 +792,36 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
     };
   }
 
-  function divine() {
-    var upper = castTrigram();
-    var lower = castTrigram();
-    return {
-      id: Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
-      time: Date.now(),
-      upper: upper,
-      lower: lower,
-      upperB: changeTrigram(upper),
-      lowerB: changeTrigram(lower)
-    };
+  function recType(r) {
+    return r && r.type === 'coin' ? 'coin' : 'liuyao';
   }
 
   function summarize(rec) {
-    var ui = trigramIndex(rec.upper);
-    var li = trigramIndex(rec.lower);
+    var type = recType(rec);
+
+    if (type === 'coin') {
+      var ui = trigramIndex(rec.upper);
+      var li = trigramIndex(rec.lower);
+      return {
+        type: 'coin',
+        ui: ui, li: li, uiB: ui, liB: li,
+        g: parseGua(guaNameOf(ui, li)),
+        gB: parseGua(guaNameOf(ui, li)),
+        changed: false
+      };
+    }
+
+    // 六爻（含旧记录，旧记录没有 type 字段）
+    var uiL = trigramIndex(rec.upper);
+    var liL = trigramIndex(rec.lower);
     var uiB = trigramIndex(rec.upperB);
     var liB = trigramIndex(rec.lowerB);
     return {
-      ui: ui, li: li, uiB: uiB, liB: liB,
-      g: parseGua(guaNameOf(ui, li)),
+      type: 'liuyao',
+      ui: uiL, li: liL, uiB: uiB, liB: liB,
+      g: parseGua(guaNameOf(uiL, liL)),
       gB: parseGua(guaNameOf(uiB, liB)),
-      changed: ui !== uiB || li !== liB
+      changed: uiL !== uiB || liL !== liB
     };
   }
 
@@ -682,14 +840,23 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
   var deleteBtn    = document.getElementById('deleteBtn');
   var doneBtn      = document.getElementById('doneBtn');
   var castBtn      = document.getElementById('castBtn');
+  var filterGroup  = document.getElementById('filterGroup');
+
+  var modeChip     = document.getElementById('modeChip');
+  var modeValue    = document.getElementById('modeValue');
+  var modeGate     = document.getElementById('modeGate');
+  var gateOptions  = modeGate.querySelectorAll('.gate-option');
 
   var STORAGE_KEY = 'yijing.history.v1';
+  var MODE_KEY    = 'liuyao.mode';
 
-  var history    = [];      // 全部记录（新 → 旧）
-  var selected   = new Set(); // 管理模式下的选中项
-  var managing   = false;   // 是否处于管理模式
-  var expandedId = null;    // 当前展开查看卦象的记录 id
+  var history    = [];
+  var selected   = new Set();
+  var managing   = false;
+  var expandedId = null;
   var busy       = false;
+  var currentMode = null;          // 'liuyao' | 'coin'
+  var filterType  = 'all';         // 'all' | 'liuyao' | 'coin'
 
   /* =========================================================
      四、存储
@@ -708,31 +875,49 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
   function saveHistory() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-    } catch (e) { /* 忽略配额错误 */ }
+    } catch (e) {}
+  }
+
+  function loadMode() {
+    try {
+      var m = localStorage.getItem(MODE_KEY);
+      return (m === 'coin' || m === 'liuyao') ? m : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function saveMode(m) {
+    try { localStorage.setItem(MODE_KEY, m); } catch (e) {}
   }
 
   /* =========================================================
      五、渲染
      ========================================================= */
 
-  // 单爻
-  function yaoHTML(v) {
+  // 单爻；opts.coin 时按 0/1 渲染，不显示数字与动爻标记
+  function yaoHTML(v, opts) {
+    opts = opts || {};
+    var isCoin = !!opts.coin;
     var isYang = v % 2 === 1;
-    var moving = (v === 6 || v === 9);
-    var mark = v === 9 ? '○' : (v === 6 ? '×' : '');
+    var moving = !isCoin && (v === 6 || v === 9);
+    var mark = isCoin ? '' : (v === 9 ? '○' : (v === 6 ? '×' : ''));
+    var numText = isCoin ? '' : String(v);
     var shape = isYang
       ? '<div class="yao-shape yang"><i></i></div>'
       : '<div class="yao-shape yin"><i></i><i></i></div>';
     return '<div class="yao-row' + (moving ? ' moving' : '') + '">' +
-             '<span class="yao-num">' + v + '</span>' +
+             '<span class="yao-num">' + numText + '</span>' +
              shape +
              '<span class="yao-tag">' + mark + '</span>' +
            '</div>';
   }
 
-  // 结果卡片（顶部结果区 & 历史详情共用）
-  function cardHTML(badge, gua, lines, upperIdx, lowerIdx, isChanged) {
-    var rows = lines.slice().reverse().map(yaoHTML).join('');
+  function cardHTML(badge, gua, lines, upperIdx, lowerIdx, isChanged, opts) {
+    opts = opts || {};
+    var rows = lines.slice().reverse().map(function (v) {
+      return yaoHTML(v, opts);
+    }).join('');
     var up = TRIGRAMS[upperIdx - 1];
     var lo = TRIGRAMS[lowerIdx - 1];
     return '' +
@@ -751,13 +936,16 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
       '</div>';
   }
 
-  // 一条记录的完整卦象（本卦 + 变卦）
   function recordCardsHTML(rec, s) {
+    if (s.type === 'coin') {
+      var cLines = rec.lower.concat(rec.upper);
+      return cardHTML('金钱卦', s.g, cLines, s.ui, s.li, false, { coin: true }) +
+             '<div class="still-note">金 钱 卦 · 无 变 爻</div>';
+    }
+
     var lines  = rec.lower.concat(rec.upper);
     var linesB = rec.lowerB.concat(rec.upperB);
-
     var html = cardHTML('本卦', s.g, lines, s.ui, s.li, false);
-
     if (s.changed) {
       html += cardHTML('变卦', s.gB, linesB, s.uiB, s.liB, true);
     } else {
@@ -766,7 +954,6 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
     return html;
   }
 
-  /* ---------- 顶部结果区 ---------- */
   function renderResult(rec) {
     if (!rec) {
       resultEl.innerHTML =
@@ -781,7 +968,6 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
     resultEl.innerHTML = '<div class="result-wrap">' + recordCardsHTML(rec, s) + '</div>';
   }
 
-  /* ---------- 时间 ---------- */
   function fmtTime(ts) {
     var d = new Date(ts);
     var p = function (n) { return String(n).padStart(2, '0'); };
@@ -789,28 +975,39 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
            ' ' + p(d.getHours()) + ':' + p(d.getMinutes());
   }
 
-  /* ---------- 历史列表 ---------- */
-  function renderHistory() {
-    countEl.textContent = history.length;
+  function visibleHistory() {
+    return history.filter(function (r) {
+      return filterType === 'all' || filterType === recType(r);
+    });
+  }
 
-    if (!history.length) {
+  function renderHistory() {
+    var visible = visibleHistory();
+    countEl.textContent = visible.length;
+
+    if (!visible.length) {
       historyList.innerHTML = '';
       emptyTip.hidden = false;
+      emptyTip.textContent = history.length ? '此分类暂无卦录' : '暂无卦录';
       updateTools();
       return;
     }
     emptyTip.hidden = true;
 
-    historyList.innerHTML = history.map(function (rec) {
+    historyList.innerHTML = visible.map(function (rec) {
       var s = summarize(rec);
       var sel = selected.has(rec.id);
       var open = expandedId === rec.id;
+      var t = recType(rec);
 
-      var changedLine = s.changed
-        ? '<div class="hi-line2">变 · ' + s.gB.name + ' ' + s.gB.sym + '</div>'
-        : '';
+      var typeBadge = '<span class="hi-type' + (t === 'coin' ? ' coin' : '') + '">' +
+                      (t === 'coin' ? '金钱' : '六爻') + '</span>';
 
-      // 只有展开时才生成详情 DOM，节省渲染开销
+      var changedLine = '';
+      if (t === 'liuyao' && s.changed) {
+        changedLine = '<div class="hi-line2">变 · ' + s.gB.name + ' ' + s.gB.sym + '</div>';
+      }
+
       var detail = open
         ? '<div class="item-detail">' +
             '<div class="item-detail-clip">' +
@@ -825,6 +1022,7 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
             '<span class="hi-check"></span>' +
             '<div class="hi-main">' +
               '<div class="hi-line1">' +
+                typeBadge +
                 '<span class="hi-num">' + s.g.num + '</span>' +
                 '<span class="hi-name">' + s.g.name + '</span>' +
                 '<span class="hi-sym">' + s.g.sym + '</span>' +
@@ -841,12 +1039,15 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
     updateTools();
   }
 
-  /* ---------- 工具按钮 ---------- */
   function updateTools() {
-    // 清理已被删除的选中项
     var ids = new Set(history.map(function (r) { return r.id; }));
     selected.forEach(function (id) {
       if (!ids.has(id)) selected.delete(id);
+    });
+
+    var visible = visibleHistory();
+    var allSel = visible.length > 0 && visible.every(function (r) {
+      return selected.has(r.id);
     });
 
     if (managing) {
@@ -858,9 +1059,8 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
       deleteBtn.disabled = selected.size === 0;
       deleteBtn.textContent = selected.size ? '删除 (' + selected.size + ')' : '删除';
 
-      selectAllBtn.disabled = history.length === 0;
-      selectAllBtn.textContent =
-        (history.length > 0 && selected.size === history.length) ? '取消全选' : '全选';
+      selectAllBtn.disabled = visible.length === 0;
+      selectAllBtn.textContent = allSel ? '取消全选' : '全选';
     } else {
       manageBtn.hidden = false;
       selectAllBtn.hidden = true;
@@ -871,7 +1071,6 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
     }
   }
 
-  /* ---------- 管理模式切换 ---------- */
   function setManaging(on) {
     managing = on;
     if (!on) selected.clear();
@@ -881,22 +1080,60 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
   }
 
   /* =========================================================
-     六、交互
+     六、模式选择
      ========================================================= */
 
-  // 占卜
+  function applyMode(mode) {
+    currentMode = mode;
+    saveMode(mode);
+    modeValue.textContent = mode === 'coin' ? '金钱卦' : '六爻';
+    castBtn.textContent = mode === 'coin' ? '起卦' : '占卜';
+    closeGate();
+  }
+
+  function openGate() {
+    Array.prototype.forEach.call(gateOptions, function (btn) {
+      btn.classList.toggle('current', btn.dataset.mode === currentMode);
+    });
+    modeGate.classList.add('show');
+    modeGate.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeGate() {
+    modeGate.classList.remove('show');
+    modeGate.setAttribute('aria-hidden', 'true');
+  }
+
+  Array.prototype.forEach.call(gateOptions, function (btn) {
+    btn.addEventListener('click', function () {
+      applyMode(btn.dataset.mode);
+    });
+  });
+
+  modeChip.addEventListener('click', openGate);
+
+  // 已选过模式时，点遮罩可关闭
+  modeGate.addEventListener('click', function (e) {
+    if (e.target === modeGate && currentMode) closeGate();
+  });
+
+  /* =========================================================
+     七、交互
+     ========================================================= */
+
   castBtn.addEventListener('click', function () {
+    if (!currentMode) { openGate(); return; }
     if (busy) return;
     busy = true;
 
     castBtn.classList.add('casting');
-    castBtn.textContent = '摇卦';
+    castBtn.textContent = currentMode === 'coin' ? '掷钱' : '摇卦';
     resultEl.classList.add('fading');
 
     if (navigator.vibrate) { try { navigator.vibrate(28); } catch (e) {} }
 
     setTimeout(function () {
-      var rec = divine();
+      var rec = currentMode === 'coin' ? divineCoin() : divine();
       history.unshift(rec);
       saveHistory();
 
@@ -904,20 +1141,18 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
       renderHistory();
 
       castBtn.classList.remove('casting');
-      castBtn.textContent = '占卜';
+      castBtn.textContent = currentMode === 'coin' ? '起卦' : '占卜';
       busy = false;
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }, 880);
   });
 
-  // 展开 / 收起历史面板
   toggleBtn.addEventListener('click', function () {
     var open = panel.classList.toggle('open');
     toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
 
-  // 点击记录：管理模式 = 选中；普通模式 = 展开卦象
   historyList.addEventListener('click', function (e) {
     var item = e.target.closest('.history-item');
     if (!item) return;
@@ -932,7 +1167,6 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
       return;
     }
 
-    // 普通模式：展开 / 收起该条记录
     expandedId = (expandedId === id) ? null : id;
     renderHistory();
 
@@ -944,7 +1178,6 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
     }
   });
 
-  // 管理 / 完成
   manageBtn.addEventListener('click', function () {
     if (!history.length) return;
     setManaging(true);
@@ -954,15 +1187,15 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
     setManaging(false);
   });
 
-  // 全选 / 取消全选
   selectAllBtn.addEventListener('click', function () {
-    if (!history.length) return;
-    if (selected.size === history.length) selected.clear();
-    else history.forEach(function (r) { selected.add(r.id); });
+    var visible = visibleHistory();
+    if (!visible.length) return;
+    var allSel = visible.every(function (r) { return selected.has(r.id); });
+    if (allSel) visible.forEach(function (r) { selected.delete(r.id); });
+    else visible.forEach(function (r) { selected.add(r.id); });
     renderHistory();
   });
 
-  // 删除选中
   deleteBtn.addEventListener('click', function () {
     if (!selected.size) return;
     if (!confirm('确定删除选中的 ' + selected.size + ' 条占卜记录？')) return;
@@ -976,8 +1209,21 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
     renderHistory();
   });
 
+  // 筛选
+  filterGroup.addEventListener('click', function (e) {
+    var btn = e.target.closest('button[data-filter]');
+    if (!btn) return;
+    filterType = btn.dataset.filter;
+    Array.prototype.forEach.call(
+      filterGroup.querySelectorAll('button'),
+      function (b) { b.classList.toggle('active', b === btn); }
+    );
+    if (managing) selected.clear();
+    renderHistory();
+  });
+
   /* =========================================================
-     七、初始化
+     八、初始化
      ========================================================= */
 
   loadHistory();
@@ -985,8 +1231,15 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
   renderResult(null);
   toggleBtn.setAttribute('aria-expanded', panel.classList.contains('open') ? 'true' : 'false');
 
+  var storedMode = loadMode();
+  if (storedMode) {
+    applyMode(storedMode);
+  } else {
+    openGate();
+  }
+
   /* =========================================================
-     八、PWA：安装提示 + Service Worker
+     九、PWA：安装提示 + Service Worker
      ========================================================= */
 
   (function initPWA() {
@@ -1007,7 +1260,6 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
       if (installBtn) installBtn.classList.remove('show');
     }
 
-    // Android / 桌面 Chrome / Edge：捕获安装事件
     window.addEventListener('beforeinstallprompt', function (e) {
       e.preventDefault();
       deferredPrompt = e;
@@ -1019,7 +1271,6 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
       hideInstall();
     });
 
-    // iOS Safari 无 beforeinstallprompt，改为手动引导
     var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
     var iosTipDone = false;
     try { iosTipDone = localStorage.getItem('liuyao.iosTip') === '1'; } catch (err) {}
@@ -1039,14 +1290,12 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
           }).catch(function () {});
           return;
         }
-        // iOS 引导
         alert('在 Safari 中点击底部「分享」按钮，\n选择「添加到主屏幕」即可安装。');
         try { localStorage.setItem('liuyao.iosTip', '1'); } catch (err) {}
         hideInstall();
       });
     }
 
-    // ---- 注册 Service Worker ----
     if (!('serviceWorker' in navigator)) return;
 
     var hadController = !!navigator.serviceWorker.controller;
@@ -1056,11 +1305,9 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
       navigator.serviceWorker
         .register('./service-worker.js', { scope: './' })
         .then(function (reg) {
-          // 已有新版本等待中
           if (reg.waiting && navigator.serviceWorker.controller) {
             askUpdate(reg.waiting);
           }
-
           reg.addEventListener('updatefound', function () {
             var sw = reg.installing;
             if (!sw) return;
@@ -1071,9 +1318,7 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
             });
           });
         })
-        .catch(function () {
-          /* file:// 或非安全上下文（非 HTTPS）下静默忽略 */
-        });
+        .catch(function () {});
     });
 
     function askUpdate(worker) {
@@ -1083,7 +1328,7 @@ main{max-width:560px;margin:0 auto;padding:22px 16px 0}
     }
 
     navigator.serviceWorker.addEventListener('controllerchange', function () {
-      if (!hadController) { hadController = true; return; } // 首次接管不刷新
+      if (!hadController) { hadController = true; return; }
       if (refreshing) return;
       refreshing = true;
       window.location.reload();
